@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeLeaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Employee application</title>
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 3px;
+}
+</style>
+</head>
+<body>
+
+ <h1>Edit employee</h1>
+ 
+ <!-- 
+ <table>
+ 	<tr>
+ 		<th>Id</th>
+ 		<th>Name</th>
+ 		<th>Job</th>
+ 		<th>Salary</th>
+ 		<th>Job startdate</th>
+		<th></th> 		
+ 	</tr>
+ 	<tr th:each="employee: ${employees}">
+ 	<td><span th:text="${employee.id}">id</span></td>
+ 	<td><span th:text="${employee.name}">name</span></td>
+ 	<td><span th:text="${employee.job}">job</span></td>
+ 	<td><span th:text="${employee.salary}">salary</span></td>
+ 	<td><span th:text="${employee.jobStartDate}">jobstartdate</span></td>
+	<td><a th:href="@{/employees/delete/{id}(id=${employee.Id})}">Delete</a></td>  <!-- /deleteEmployee/1 -- >
+<!-- 	<td><a th:href="@{/employees/delete(id=${employee.Id})}">Delete</a></td>  -->      <!-- /deleteEmployee?id=1 -- >
+ 	</tr>
+ </table>
+ <br/>
+  -->
+  
+ <h4>Edit employee:</h4>
+ <form th:action="@{/employees/edit}" method="post" th:object="${editEmployee}">
+ 	<input type="hidden" th:field="*{id}" >
+ 	<table>
+ 		<tr><td>Id:</td><td><span th:text="*{id}">id</span></td></tr>
+ 		<tr><td>Name: </td><td><input th:field="*{name}"/></td></tr>
+ 		<tr><td>Job: </td><td><input th:field="*{job}"/></td></tr>
+ 		<tr><td>Salary: </td><td><input th:field="*{salary}"/></td></tr>
+ 		<tr><td>JobStartDate: </td><td><input th:field="*{jobStartDate}"/></td></tr>
+   	</table>
+   	<br/>    
+ 	<input type="submit" value="Edit employee" />
+ </form>
+
+</body>
+</html>

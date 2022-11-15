@@ -1,0 +1,13 @@
+employee:
+  limits:
+    fiveyears: 5
+    tenyears: 10
+    twoandhalfyears: 2.5
+  payraisepercent:
+    fiveyears: 5
+    lessthantwoandhalfyears: 0
+    tenyears: 10
+    twoandhalfyears: 2
+spring:
+  profiles:
+    active: prod
