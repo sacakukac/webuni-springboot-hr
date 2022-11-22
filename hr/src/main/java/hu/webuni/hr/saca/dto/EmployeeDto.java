@@ -2,12 +2,24 @@ package hu.webuni.hr.saca.dto;
 
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Past;
+
 public class EmployeeDto {
 
 	private Long id;
+	
+	@NotEmpty
 	private String name;
+	
+	@NotEmpty
 	private String job;
+	
+	@Min(0)
 	private int salary;
+	
+	@Past
 	private LocalDateTime jobStartDate;
 	
 	public EmployeeDto() {

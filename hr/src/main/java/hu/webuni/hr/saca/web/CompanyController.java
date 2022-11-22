@@ -1,8 +1,6 @@
 package hu.webuni.hr.saca.web;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,9 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import hu.webuni.hr.saca.Service.EmployeeService;
+import hu.webuni.hr.saca.Service.CompanyService;
 import hu.webuni.hr.saca.dto.CompanyDto;
 import hu.webuni.hr.saca.dto.EmployeeDto;
+import hu.webuni.hr.saca.mapper.CompanyMapper;
 import hu.webuni.hr.saca.model.Employee;
 
 @RestController
@@ -29,20 +28,10 @@ import hu.webuni.hr.saca.model.Employee;
 public class CompanyController {
 	
 	@Autowired
-	private EmployeeService employeeService;
-
-	private Map<Long, CompanyDto> companies = new HashMap<>();
-
-	{
-		EmployeeDto emp1 = new EmployeeDto(1L, "Bela", "boss", 100, LocalDateTime.of(2022,11,11,12,00,00).minusMonths(50));
-		EmployeeDto emp2 = new EmployeeDto(2L, "Jozsi", "bigboss", 200, LocalDateTime.of(2022,11,11,12,00,00).minusMonths(20));
-		EmployeeDto emp3 = new EmployeeDto(3L, "Péter", "worker", 50, LocalDateTime.of(2022,11,11,12,00,00).minusMonths(10));
-		EmployeeDto emp4 = new EmployeeDto(4L, "Gyula", "ceo", 300, LocalDateTime.of(2022,11,11,12,00,00).minusMonths(35));
-		List<EmployeeDto> empList1 = new ArrayList<EmployeeDto>(Arrays.asList(emp1, emp2)); 
-		List<EmployeeDto> empList2 = new ArrayList<EmployeeDto>(Arrays.asList(emp3, emp4)); 
-		companies.put(1L, new CompanyDto(1L, "Kerékgyártó kft.", "Budapest, 1044. Átlós utca 23", "12-34-567890", empList1));
-		companies.put(2L, new CompanyDto(2L, "Aszfaltozó kft.", "Budapest, 1033. Vízimalom utca 42", "98-76-5432100", empList2));
-	}
+	private CompanyService companyService;
+	
+	@Autowired
+	CompanyMapper companyMapper;
 
 	@GetMapping
 	public List<CompanyDto> getAll(@RequestParam(required = false) String full) {

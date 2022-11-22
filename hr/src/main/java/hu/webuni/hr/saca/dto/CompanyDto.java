@@ -2,8 +2,6 @@ package hu.webuni.hr.saca.dto;
 
 import java.util.List;
 
-import hu.webuni.hr.saca.model.Employee;
-
 public class CompanyDto {
 
 	private long id;

@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,11 +22,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import hu.webuni.hr.saca.dto.EmployeeDto;
+import hu.webuni.hr.saca.mapper.EmployeeMapper;
 
 @RestController
 @RequestMapping("/api/employees")
-public class EmployeeContorller {
+public class EmployeeController {
 
+	@Autowired
+	EmployeeMapper employeeMapper;
+	
 	private Map<Long, EmployeeDto> employees = new HashMap<>();
 
 	{
@@ -77,8 +84,6 @@ public class EmployeeContorller {
 		}
 	}
 	
-
-	
 	@GetMapping("/{id}")
 	public ResponseEntity<EmployeeDto> getById(@PathVariable long id) {
 		EmployeeDto employeeDto = employees.get(id); 
@@ -90,13 +95,13 @@ public class EmployeeContorller {
 	}
 
 	@PostMapping
-	public EmployeeDto createEmployee(@RequestBody EmployeeDto employeeDto) {
+	public EmployeeDto createEmployee(@RequestBody @Valid EmployeeDto employeeDto) {
 		employees.put(employeeDto.getId(), employeeDto);
 		return employeeDto;
 	}
 	
 	@PutMapping("/{id}")  //modify
-	public ResponseEntity<EmployeeDto> modifyEmployee(@PathVariable long id, @RequestBody EmployeeDto employeeDto){
+	public ResponseEntity<EmployeeDto> modifyEmployee(@PathVariable long id, @RequestBody @Valid EmployeeDto employeeDto){
 		if (!employees.containsKey(id)) {
 			return ResponseEntity.notFound().build();
 		} else {
