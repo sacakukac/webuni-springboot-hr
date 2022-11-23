@@ -1,11 +1,11 @@
 package hu.webuni.hr.saca.web;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,11 +16,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import hu.webuni.hr.saca.Service.CompanyService;
+import hu.webuni.hr.saca.Service.EmployeeService;
 import hu.webuni.hr.saca.dto.CompanyDto;
 import hu.webuni.hr.saca.dto.EmployeeDto;
 import hu.webuni.hr.saca.mapper.CompanyMapper;
+import hu.webuni.hr.saca.mapper.EmployeeMapper;
+import hu.webuni.hr.saca.model.Company;
 import hu.webuni.hr.saca.model.Employee;
 
 @RestController
@@ -33,18 +37,22 @@ public class CompanyController {
 	@Autowired
 	CompanyMapper companyMapper;
 
+	@Autowired
+	EmployeeService employeeService;
+	
+	@Autowired
+	EmployeeMapper employeeMapper;
+	
 	@GetMapping
 	public List<CompanyDto> getAll(@RequestParam(required = false) String full) {
 		List<CompanyDto> compDto;
 		if ((full == null) || (full.equalsIgnoreCase("false"))) {
 			compDto = new ArrayList<>();
-			for (Map.Entry<Long, CompanyDto> entry : companies.entrySet()) {
-//				Long key = entry.getKey();
-				CompanyDto comp = entry.getValue();
-				compDto.add(  new CompanyDto(comp.getId(), comp.getName(), comp.getAddress(), comp.getRegNumber(), null)  );
-			}
+			for (CompanyDto companyDto : companyMapper.companiesToDtos((companyService.findAll()))) {
+				compDto.add(  new CompanyDto(companyDto.getId(), companyDto.getName(), companyDto.getAddress(), companyDto.getRegNumber(), null)  );
+			}	 
 		} else {
-			compDto = new ArrayList<>(companies.values());  // employee-k is, összes elem
+			compDto = companyMapper.companiesToDtos(companyService.findAll());  // employee-k is, összes elem
 		}			
 		return compDto;
 	}
@@ -53,9 +61,10 @@ public class CompanyController {
 	public ResponseEntity<CompanyDto> getById(@PathVariable long id, @RequestParam(required = false) String full) {
 		CompanyDto compDto;
 		if ((full == null) || (full.equalsIgnoreCase("false"))) {
-			compDto = new CompanyDto(companies.get(id).getId(), companies.get(id).getName(), companies.get(id).getAddress(), companies.get(id).getRegNumber(), null); 
+			CompanyDto foundCompanyDto = companyMapper.companyToDto(companyService.findById(id));
+			compDto = new CompanyDto(foundCompanyDto.getId(), foundCompanyDto.getName(), foundCompanyDto.getAddress(), foundCompanyDto.getRegNumber(), null); 
 		} else {
-			compDto = companies.get(id); 
+			compDto = companyMapper.companyToDto(companyService.findById(id)); 
 		}
 		if (compDto != null) {
 			return ResponseEntity.ok(compDto);
@@ -66,52 +75,53 @@ public class CompanyController {
 
 	@PostMapping
 	public CompanyDto createCompany(@RequestBody CompanyDto companyDto) {
-		companies.put(companyDto.getId(), companyDto);
-		return companyDto;
+		Company company = companyService.save(companyMapper.dtoToCompany(companyDto));
+		return companyMapper.companyToDto(company);
 	}
 	
 	@PutMapping("/{id}")  //modify
 	public ResponseEntity<CompanyDto> modifyCompany(@PathVariable long id, @RequestBody CompanyDto companyDto){
-		if (!companies.containsKey(id)) {
-			return ResponseEntity.notFound().build();
-		} else {
-			companyDto.setId(id);
-			companies.put(id, companyDto);
-			return ResponseEntity.ok(companyDto);
+		Company company = companyMapper.dtoToCompany(companyDto);
+		company.setId(id);
+		try {
+			CompanyDto savedCompanyDto = companyMapper.companyToDto((companyService.update(company))); 
+			return ResponseEntity.ok(savedCompanyDto);
+		} catch (NoSuchElementException e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
 	}
 
 	@DeleteMapping("/{id}")
 	public void deleteCompany(@PathVariable Long id) {
-		companies.remove(id);
+		companyService.delete(id);
 	}
 
 	@PostMapping("/{id}/addEmployee")
 	public ResponseEntity<EmployeeDto>  createEmployee(@PathVariable Long id, @RequestBody EmployeeDto employeeDto) {
-		CompanyDto companyDto = companies.get(id);
-		if (companyDto != null) {
-			companyDto.getEmployees().add(employeeDto);
-			return ResponseEntity.ok(employeeDto);
+		Company company = companyService.findById(id);
+		if (company != null) {
+			Employee employee = companyService.saveEmployee(id, employeeMapper.dtoToEmployee(employeeDto));
+			return ResponseEntity.ok(employeeMapper.employeeToDto(employee));
 		} else {
 			return ResponseEntity.notFound().build();
-
 		}
 	}
 
 	@DeleteMapping("/{compid}/deleteEmployee/{empid}")
 	public void deleteEmployee (@PathVariable Long compid, @PathVariable Long empid ) {
-		EmployeeDto empl = companies.get(compid).getEmployees().stream().filter(emp -> emp.getId() == empid).findFirst().get();
-		companies.get(compid).getEmployees().remove(empl);
+		companyService.deleteEmployee(compid, empid);
 	}
 
 	@PutMapping("/{compid}/changeEmployee")
-	public List<EmployeeDto> changeEmployees(@PathVariable Long compid, @RequestBody List<EmployeeDto>  listEmployees) {
-		companies.get(compid).setEmployees(listEmployees);
-		return listEmployees;
+	public List<EmployeeDto> changeEmployees(@PathVariable Long compid, @RequestBody List<EmployeeDto>  listEmployeesDto) {
+		List<Employee> listEmployees = employeeMapper.employeesDtosToEmpl(listEmployeesDto);
+		List<Employee> changedEmployee = companyService.changeEmployee(compid, listEmployees);
+		return employeeMapper.employeesToDtos(changedEmployee);
 	} 
 	
 	@PostMapping("/getpercent")
-	public int getPayRaisePercent(@RequestBody Employee employee) {
+	public int getPayRaisePercent(@RequestBody EmployeeDto employeeDto) {
+		Employee employee = employeeMapper.dtoToEmployee(employeeDto);
 		return employeeService.getPayRaisePercent(employee);
 	}
 }

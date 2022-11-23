@@ -11,6 +11,8 @@ import hu.webuni.hr.saca.model.Employee;
 public interface EmployeeMapper {
 
 	List<EmployeeDto> employeesToDtos(List<Employee> employees);
+
+	List<Employee> employeesDtosToEmpl(List<EmployeeDto> employeesDto);
 	
 	EmployeeDto employeeToDto(Employee employee);
 	
