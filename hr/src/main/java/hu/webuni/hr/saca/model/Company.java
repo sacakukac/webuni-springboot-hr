@@ -2,12 +2,26 @@ package hu.webuni.hr.saca.model;
 
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+@Entity
 public class Company {
 
+	@Id
+	//@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue
+	@Column(name = "company_id")
 	private long id;
 	private String name;
 	private String address;
 	private String regNumber;
+	
+	@OneToMany(mappedBy = "company",fetch=FetchType.EAGER)  //az employee-ban a company property
 	private List<Employee> employees;
 	
 	public Company() {
@@ -20,8 +34,6 @@ public class Company {
 		this.regNumber = regNumber;
 		this.employees = employees;
 	}
-
-
 
 	public String getName() {
 		return name;

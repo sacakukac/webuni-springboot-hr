@@ -23,7 +23,7 @@ public class HrApplication implements CommandLineRunner{
 	@Override
 	public void run(String... args) throws Exception {
 		LocalDateTime now = LocalDateTime.now();
-		Employee emp1 = new Employee(1L, "Bela", "boss", 100, now.minusMonths(91));
+		Employee emp1 = new Employee(1L, "Bela", "boss", 100, now.minusMonths(91), null);
 		System.out.println(emp1.getName() + " raised salary: " + salaryService.getEmployeeSalary(emp1));
 		
 	}

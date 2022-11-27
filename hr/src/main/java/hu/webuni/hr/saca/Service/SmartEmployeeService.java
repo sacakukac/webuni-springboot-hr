@@ -12,6 +12,7 @@ import hu.webuni.hr.saca.model.Employee;
 
 @Service 
 public class SmartEmployeeService extends AbstractEmployeeService {
+	
 
 	@Autowired
 	HrConfigProperties config;

@@ -96,11 +96,11 @@ public class CompanyController {
 		companyService.delete(id);
 	}
 
-	@PostMapping("/{id}/addEmployee")
-	public ResponseEntity<EmployeeDto>  createEmployee(@PathVariable Long id, @RequestBody EmployeeDto employeeDto) {
-		Company company = companyService.findById(id);
+	@PostMapping("/{companyId}/addEmployee")
+	public ResponseEntity<EmployeeDto>  createEmployee(@PathVariable Long companyId, @RequestBody EmployeeDto employeeDto) {
+		Company company = companyService.findById(companyId);
 		if (company != null) {
-			Employee employee = companyService.saveEmployee(id, employeeMapper.dtoToEmployee(employeeDto));
+			Employee employee = companyService.saveEmployee(companyId, employeeMapper.dtoToEmployee(employeeDto));
 			return ResponseEntity.ok(employeeMapper.employeeToDto(employee));
 		} else {
 			return ResponseEntity.notFound().build();

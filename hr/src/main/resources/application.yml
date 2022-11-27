@@ -18,6 +18,16 @@ hr:
 
 
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hr
+    username: postgres
+    password: postgres
+    
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    
   mvc:
     format:
       date-time: yyyy-MM-dd HH:mm:ss

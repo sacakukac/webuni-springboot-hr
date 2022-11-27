@@ -18,8 +18,8 @@ public class EmployeeTLController {
 	private List<Employee> allEmployees = new ArrayList<>();
 	
 	{
-		allEmployees.add(new Employee(1L, "Bela", "bigboss", 100, LocalDateTime.of(2022,11,11,12,00,00).minusMonths(50)));
-		allEmployees.add(new Employee(2L, "jozsi", "littleboss", 50, LocalDateTime.of(2022,11,11,12,00,00).minusMonths(30)));
+		allEmployees.add(new Employee(1L, "Bela", "bigboss", 100, LocalDateTime.of(2022,11,11,12,00,00).minusMonths(50), null));
+		allEmployees.add(new Employee(2L, "jozsi", "littleboss", 50, LocalDateTime.of(2022,11,11,12,00,00).minusMonths(30), null));
 	}
 	
 	@GetMapping("/")
