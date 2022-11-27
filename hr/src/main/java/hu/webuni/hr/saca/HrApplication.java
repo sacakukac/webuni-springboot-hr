@@ -7,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import hu.webuni.hr.saca.Service.InitDbService;
 import hu.webuni.hr.saca.Service.SalaryService;
 import hu.webuni.hr.saca.model.Employee;
 
@@ -15,6 +16,9 @@ public class HrApplication implements CommandLineRunner{
 
 	@Autowired
 	SalaryService salaryService; 
+	
+	@Autowired
+	InitDbService initDbService;  
 	
 	public static void main(String[] args) {
 		SpringApplication.run(HrApplication.class, args);
@@ -25,7 +29,8 @@ public class HrApplication implements CommandLineRunner{
 		LocalDateTime now = LocalDateTime.now();
 		Employee emp1 = new Employee(1L, "Bela", "boss", 100, now.minusMonths(91), null);
 		System.out.println(emp1.getName() + " raised salary: " + salaryService.getEmployeeSalary(emp1));
-		
+		initDbService.clearDb();
+		initDbService.insertTestData();
 	}
 
 }

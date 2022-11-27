@@ -14,7 +14,7 @@ import javax.persistence.NamedQuery;
 @NamedQuery(name = "Employee.getJob",query = "SELECT e FROM Employee e WHERE job = :job")
 @NamedQuery(name = "Employee.getName",query = "SELECT e FROM Employee e WHERE UPPER(name) LIKE (UPPER(:name)||'%')")
 @NamedQuery(name = "Employee.getJobEnterDate",query = "SELECT e FROM Employee e WHERE e.jobStartDate BETWEEN :enterdate1 AND :enterdate2")
-
+@NamedQuery(name = "Employee.deleteAll",query = "DELETE FROM Employee")
 public class Employee {
 
 	@Id

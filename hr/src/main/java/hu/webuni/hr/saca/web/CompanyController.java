@@ -119,6 +119,7 @@ public class CompanyController {
 		return employeeMapper.employeesToDtos(changedEmployee);
 	} 
 	
+	//TODO: ezt az employeeService-t kigyomlálni valahogy
 	@PostMapping("/getpercent")
 	public int getPayRaisePercent(@RequestBody EmployeeDto employeeDto) {
 		Employee employee = employeeMapper.dtoToEmployee(employeeDto);
