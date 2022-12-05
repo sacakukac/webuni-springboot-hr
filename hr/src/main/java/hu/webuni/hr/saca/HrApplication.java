@@ -31,6 +31,7 @@ public class HrApplication implements CommandLineRunner{
 		System.out.println(emp1.getName() + " raised salary: " + salaryService.getEmployeeSalary(emp1));
 		initDbService.clearDb();
 		initDbService.insertTestData();
+		initDbService.createUsersIfNeeded();
 	}
 
 }

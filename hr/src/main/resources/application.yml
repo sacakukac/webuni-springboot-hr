@@ -16,6 +16,9 @@ hr:
         10: 10
         7.5: 8 
 
+logging:
+  level:
+    org.springframework.security: debug 
 
 spring:
   datasource:
@@ -26,7 +29,12 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
+#update vagy 
+#lehet create is, akkor újragenerál mindent nulláról      
+    open-in-view: true
+#lehet false is, akkor csak a tranzakcióban nyitott a data session    
+    
     
   mvc:
     format:

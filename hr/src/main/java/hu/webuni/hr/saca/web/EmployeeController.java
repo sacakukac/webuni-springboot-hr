@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,9 +26,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import hu.webuni.hr.saca.Service.EmployeeRepository;
+import hu.webuni.hr.saca.Service.LogEntryService;
 import hu.webuni.hr.saca.dto.EmployeeDto;
 import hu.webuni.hr.saca.mapper.EmployeeMapper;
 import hu.webuni.hr.saca.model.Employee;
+import hu.webuni.hr.saca.model.LogEntry;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -41,6 +44,9 @@ public class EmployeeController {
 	
 	@Autowired
 	private EmployeeRepository employeeRepository;
+
+	@Autowired
+	LogEntryService logEntryService;
 	
 //	private Map<Long, EmployeeDto> employees = new HashMap<>();
 //
@@ -98,11 +104,13 @@ public class EmployeeController {
 	}
 	
 	@GetMapping("/{id}")
+	@PreAuthorize("hasAuthority('admin')")
 	public ResponseEntity<EmployeeDto> getById(@PathVariable long id) {
 		//Employee employee = employeeService.findById(id);
 		if (employeeRepository.findById(id).isPresent()) {
 			Employee employee = employeeRepository.findById(id).get();
 			EmployeeDto employeeDto = employeeMapper.employeeToDto(employee);
+			logEntryService.createLog(String.format(" %d %s ", employee.getId(), employee.getName()));
 			return ResponseEntity.ok(employeeDto);
 		} else {
 			return ResponseEntity.notFound().build();			

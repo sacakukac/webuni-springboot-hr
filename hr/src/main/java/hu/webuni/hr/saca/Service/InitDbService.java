@@ -4,12 +4,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import hu.webuni.hr.saca.model.AvgOfSalary;
 import hu.webuni.hr.saca.model.Company;
 import hu.webuni.hr.saca.model.CountOfCompany;
 import hu.webuni.hr.saca.model.Employee;
+import hu.webuni.hr.saca.model.EmployeeUser;
 
 @Service
 public class InitDbService {
@@ -33,12 +35,32 @@ public class InitDbService {
 	@Autowired
 	CompanyService companyService;
 	
+	EmployeeUserRepository employeeUserRepository;
+	PasswordEncoder passwordEncoder;
+	
+	public InitDbService(EmployeeUserRepository employeeUserRepository, PasswordEncoder passwordEncoder) {
+		super();
+		this.employeeUserRepository = employeeUserRepository;
+		this.passwordEncoder = passwordEncoder;
+	}
+	
+	@Transactional
+	public void createUsersIfNeeded() {
+		if(!employeeUserRepository.existsById("admin")) {
+			employeeUserRepository.save(new EmployeeUser("admin", passwordEncoder.encode("pass"), Set.of("admin","user")));
+		}
+		if(!employeeUserRepository.existsById("user")) {
+			employeeUserRepository.save(new EmployeeUser("user", passwordEncoder.encode("pass"), Set.of("user")));
+		}
+	}
+	
+	
 	@Transactional
 	public void clearDb() {
 		em.createNamedQuery("Employee.deleteAll").executeUpdate();
 		em.createNamedQuery("Company.deleteAll").executeUpdate();
 	}
-	
+
 	@Transactional
 	public void insertTestData() {
 		                   
@@ -49,12 +71,12 @@ public class InitDbService {
 		Employee emp2 = new Employee(null, "Jozsi", "boss", 2000, LocalDateTime.of(2022,11,11,12,00,00).minusMonths(20), company1);
 		Employee emp3 = new Employee(null, "Péter", "manager", 300, LocalDateTime.of(2022,11,11,12,00,00).minusMonths(10), company1);
 		Employee emp4 = new Employee(null, "Gyula", "tester", 200, LocalDateTime.of(2022,11,11,12,00,00).minusMonths(15), company1);
-		Employee emp5 = new Employee(null, "Joe", "manager", 200, LocalDateTime.of(2022,11,11,12,00,00).minusMonths(25), company1);
-		Employee emp6 = new Employee(null, "Tarja", "tester", 250, LocalDateTime.of(2022,11,11,12,00,00).minusMonths(35), company1);
-		List<Employee> empList1 = new ArrayList<Employee>(Arrays.asList(emp1, emp2, emp3, emp4, emp5, emp6)); 
-		//List<Employee> empList2 = new ArrayList<Employee>(Arrays.asList( emp5, emp6));
+		Employee emp5 = new Employee(null, "Joe", "manager", 200, LocalDateTime.of(2022,11,11,12,00,00).minusMonths(25), company2);
+		Employee emp6 = new Employee(null, "Tarja", "tester", 250, LocalDateTime.of(2022,11,11,12,00,00).minusMonths(35), company2);
+		List<Employee> empList1 = new ArrayList<Employee>(Arrays.asList(emp1, emp2, emp3, emp4)); 
+		List<Employee> empList2 = new ArrayList<Employee>(Arrays.asList( emp5, emp6));
 		company1.setEmployees(empList1);
-		//company2.setEmployees(empList2);
+		company2.setEmployees(empList2);
 
 		employeeRepository.save(emp1);
 		employeeRepository.save(emp2);
